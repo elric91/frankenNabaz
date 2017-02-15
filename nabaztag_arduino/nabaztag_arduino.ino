@@ -22,7 +22,7 @@
 
 
 LedControl lc = LedControl(LMATRIX_DIN,LMATRIX_CLK,LMATRIX_CS, LMATRIX_NBR);
-earz rear(REAR_PINA, REAR_PINB, REAR_POS)
+Earz rear(REAR_PINA, REAR_PINB, REAR_POS);
 
 void setup(){
   Serial.begin(57600);
@@ -31,24 +31,14 @@ void setup(){
   lc.setIntensity(0,8);
   lc.clearDisplay(0);
   // init ears
-  pinMode(REAR_PINA, OUTPUT);
-  pinMode(REAR_PINB, OUTPUT);
-  pinMode(LEAR_PINA, OUTPUT);
-  pinMode(LEAR_PINB, OUTPUT);
-  pinMode(REAR_POS, INPUT);
-  pinMode(LEAR_POS, INPUT);
   pinMode(HEAD_BTN, INPUT);
   pinMode(SCROLL_BTN, INPUT);
-  initEars();
+  rear.clearPos();
+  rear.forwardTo(7);
 }
 
 void loop(){
-/*  forward();
-  delay(1000);
-  reverse();
-  delay(1000);
-  softStop();
-  delay(1000);*/
+  rear.followPos();
 }
 
 

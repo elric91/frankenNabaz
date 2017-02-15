@@ -17,6 +17,7 @@ class Earz {
   int motor_pinb;
   int pos_pin;
   int current_angle;
+  int target_angle;
   int mvt;
   unsigned long timestamp;
   
@@ -27,6 +28,8 @@ class Earz {
     motor_pinb = pinb;
     pos_pin = pinp;
     current_angle = 0;
+    target_angle = 0;
+    
     mvt = MVT_STOP; 
 
     pinMode(motor_pina, OUTPUT);
@@ -36,8 +39,7 @@ class Earz {
   }
   
   void clearPos(){
-  
-   
+     
     forward();
     
     int temp_pos = 0;
@@ -48,18 +50,10 @@ class Earz {
   
       if ((HIGHVAL == state) && (readMe < 500)) {
         temp_pos ++;
-        Serial.print ("pos : ");
-        Serial.println (temp_pos);
         unsigned long duration = millis() - timestamp;
-        Serial.print ("step : ");
-        Serial.print (duration);
-        Serial.print (" value : ");
-        Serial.println (temp_pos);
         state = LOWVAL;
         timestamp = millis();
         if (duration > 400){
-          Serial.print("-- lock @ ");
-          Serial.println (temp_pos);
           temp_pos = EAR_POS_TOTAL - EAR_POS_OFFSET;
         }
       }
@@ -88,11 +82,43 @@ class Earz {
     mvt = MVT_FORWARD;
   }
   
+  void forwardTo(int angle){
+    target_angle = angle;
+    forward();
+  }
+    
   void reverse(){
     softStop();
     digitalWrite( motor_pina, HIGH);
     digitalWrite( motor_pinb, LOW);
     mvt = MVT_REVERSE;
+  }
+
+  void reverseTo(int angle){
+    target_angle = angle;
+    reverse();
+  }
+
+
+  void followPos(){
+    if (mvt != MVT_STOP) {
+      static int state = HIGHVAL;
+      int readMe = analogRead(pos_pin);
+    
+      if ((HIGHVAL == state) && (readMe < 500)) {
+        state = LOWVAL;
+        if (mvt == MVT_FORWARD) current_angle = (current_angle + 1) % 18;
+        if (mvt == MVT_REVERSE)  current_angle = (current_angle + 17) % 18;
+       }
+      if ((LOWVAL == state) && (readMe > 500)) {
+        state = HIGHVAL;
+      }
+ 
+      Serial.print("angle : ");
+      Serial.println(current_angle);
+  
+      if (current_angle == target_angle) softStop();
+    }
   }
   
   
