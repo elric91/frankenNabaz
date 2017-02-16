@@ -3,8 +3,8 @@
 
 // LED MATRIX
 #define LMATRIX_DIN 12
-#define LMATRIX_CLK 11
-#define LMATRIX_CS 10
+#define LMATRIX_CS 11
+#define LMATRIX_CLK 10
 #define LMATRIX_NBR 1
 #define LMATRIX_DELAY 10
 // EARS MOVEMENT
@@ -23,6 +23,7 @@
 
 LedControl lc = LedControl(LMATRIX_DIN,LMATRIX_CLK,LMATRIX_CS, LMATRIX_NBR);
 Earz rear(REAR_PINA, REAR_PINB, REAR_POS);
+Earz lear(LEAR_PINA, LEAR_PINB, LEAR_POS);
 
 void setup(){
   Serial.begin(57600);
@@ -34,11 +35,15 @@ void setup(){
   pinMode(HEAD_BTN, INPUT);
   pinMode(SCROLL_BTN, INPUT);
   rear.clearPos();
+  lear.clearPos();
+
+  // 
   rear.forwardTo(7);
 }
 
 void loop(){
   rear.followPos();
+  lear.followPos();
 }
 
 
